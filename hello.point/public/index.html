@@ -18,25 +18,25 @@
   </head>
   <body>
     <div>
-      <h1>Hello World Example (WebSockets Disabled)</h1>
+      <h1>Hello World Example</h1>
       <h2>Demo Storage Layer features and the Point Browser SDK</h2>
 
       <h4 style="color: pink">Using Point SDK Version: <span id="pointSDKVersion"></span></h4>
 
-      <!-- <table>
+      <table>
         <tr>
           <td>Test <b>HelloWorld</b> Event</td>
           <td>Test <b>UpdatedValue</b> Event</td>
         </tr>
         <tr>
-          <td><button id="btnSubscribeHelloWorld" onclick="subscribeContractEvent('Hello', 'HelloWorld')">Subscribe</button><button id="btnUnsubscribeHelloWorld" onclick="unsubscribeContractEvent('Hello', 'HelloWorld')">Unsubscribe</button></td>
-          <td><button id="btnSubscribeUpdatedValue" onclick="subscribeContractEvent('Hello', 'UpdatedValue')">Subscribe</button><button id="btnUnsubscribeUpdatedValue" onclick="unsubscribeContractEvent('Hello', 'UpdatedValue')">Unsubscribe</button></td>
+          <td><button id="btnSubscribeHelloWorld" onclick="subscribeContractEvent('Hello', 'HelloWorld', websocketMessageHandler)">Subscribe</button><button id="btnUnsubscribeHelloWorld" onclick="unsubscribeContractEvent('Hello', 'HelloWorld')">Unsubscribe</button></td>
+          <td><button id="btnSubscribeUpdatedValue" onclick="subscribeContractEvent('Hello', 'UpdatedValue', websocketMessageHandler)">Subscribe</button><button id="btnUnsubscribeUpdatedValue" onclick="unsubscribeContractEvent('Hello', 'UpdatedValue')">Unsubscribe</button></td>
         </tr>
         <tr>
           <td><button id="btnEmitHelloWorld" onclick="emitHelloWorld()">Emit</button><input type="text" id="txtHelloWorld" value="Tiger" ></input></td>
           <td><button id="btnEmitUpdatedValue" onclick="emitUpdatedValue()">Emit</button><input type="text" id="txtUpdatedValue" value="Durian" ></input></td>
         </tr>
-      </table> -->
+      </table>
       <br />
       <a href="#">Click Here to Test Notifications Extention (check README in 'hello.point/extension')</a>
       <br />
@@ -65,8 +65,8 @@
       <br />
       <br />
       <br />
-      <!-- <b>WebSocket Events</b>
-      <ul id="wsevents"></ul> -->
+      <b>WebSocket Events</b>
+      <ul id="wsevents"></ul>
       <b>API Responses</b>
       <p id="results"></p>
     </div>
@@ -176,76 +176,52 @@
           ERROR: 'subscription_error',
       };
 
+      const subscriptions = {};
+
       // example of a callback function that can be used to handle data from a websocket
       function websocketMessageHandler(_payload) {
-        const payload = JSON.parse(_payload);
-        console.log('Received Payload: ', payload);
+        let li = document.createElement("li");
+        let wsmsg = document.createTextNode(JSON.stringify(_payload));
+        li.appendChild(wsmsg);
+        document.getElementById("wsevents").appendChild(li);
+      }
 
-        const { type, subscriptionId, request, data } = payload;
-        const { hostname, params: { contract, event } = {} } = request;
-        let msg = '';
-        // check this message is for us by checking the hostname
-        if(hostname === 'hello.point') {
-          switch (type) {
-            // if this is a SUBSCRIBED_EVENT then add this new subscription id to the subscriptions manager
-            case SUBSCRIPTION_EVENT_TYPES.CONFIRMATION: {
-              msg = `SUBSCRIBED: ${contract} contract ${event} events with subscription id ${subscriptionId}`;
-              addNewContractEventSubscription(contract, event, subscriptionId);
-              break;
-            }
-            // if this is a UNSUBSCRIBED_EVENT just update the msg for display to the user
-            case SUBSCRIPTION_EVENT_TYPES.CANCELLATION: {
-              msg = `UNSUBSCRIBED: ${contract} contract ${event} events using subscription id ${subscriptionId}`;
-              break;
-            }
-            // if this is a DATA_EVENT then check the type of the event and switch on that
-            case SUBSCRIPTION_EVENT_TYPES.EVENT: {
-              // if this is a subscribeContractEvent ...
-              if (request.type === 'subscribeContractEvent') {
-                // since this is type: 'subscribeContractEvent'
-                // we know the params will contain the same keys we used to subscribe to the event
-                // which is 'contract' and 'event' so therefore we can check the evnet key
-                switch(event) {
-                  case 'UpdatedValue':
-                    // returnValues will contain an object with oldValue and newValue key
-                    // as defined by the Hello Smart Contract UpdatedValue event
-                    const {oldValue, newValue} = data.returnValues;
-                    msg = `EMIT: UpdatedValue Event - old value: ${oldValue} was changed to ${newValue}`;
-                    break;
-                  case 'HelloWorld':
-                    // returnValues will contain an object with just a message key
-                    // as defined by the Hello Smart Contract HelloWorld event
-                    const {message} = data.returnValues;
-                    msg = `EMIT: HelloWorld Event - Contract says hello: ${message}`
-                    break;
-                  default:
-                    msg = data.message;
-                    break;
-                }
-              }
-              break;
-            }
-
-            case SUBSCRIPTION_EVENT_TYPES.ERROR:
-            default: {
-              msg = `SUBSCRIPTION_ERROR: ${data.message}`;
-              break;
-            }
-          }
-          let li = document.createElement("li");
-          let wsmsg = document.createTextNode(msg);
-          li.appendChild(wsmsg);
-          document.getElementById("wsevents").appendChild(li);
+      function Subscription(subscriptionContractEvent) {
+        this.subscription = subscriptionContractEvent;
+        this.unsubscribe = function () {
+          this.unsubscribed = true;
+          this.handler = null;
+          this.subscription.unsubscribe();
+        }
+        this.subscribe = async function(handler) {
+          this.handler = handler;
+          do {
+            this.handler(await this.subscription());
+          } while(!this.unsubscribed);          
         }
       }
 
-      async function subscribeContractEvent(contract, event) {
-        window.point.contract.subscribe({contract, event});
+      async function subscribeContractEvent(contract, event, handler) {
+
+        if (!subscriptions[contract])
+          subscriptions[contract] = {};
+
+        if (subscriptions[contract][event])
+          return false;
+        
+        const subscribeToContractEvent = await window.point.contract.subscribe({contract, event});
+
+        subscriptions[contract][event] = new Subscription(subscribeToContractEvent);
+        subscriptions[contract][event].subscribe(handler);
       }
 
       async function unsubscribeContractEvent(contract, event) {
-        subscriptionId = contractEventSubscriptions[contract][event];
-        window.point.subscriptions.removeSubscriptionById({contract, event, subscriptionId});
+        console.log(`Trying to unsubscribe ${contract} ${event}`);
+        if (subscriptions && subscriptions[contract] && subscriptions[contract][event]) {
+          subscriptions[contract][event].unsubscribe();
+          subscriptions[contract][event] = null; 
+        }
+
       }
 
       async function emitUpdatedValue() {
