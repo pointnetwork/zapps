@@ -181,9 +181,10 @@
       // example of a callback function that can be used to handle data from a websocket
       function websocketMessageHandler(_payload) {
         let li = document.createElement("li");
-        let wsmsg = document.createTextNode(JSON.stringify(_payload));
+        let wsmsg = document.createTextNode(`Event: ${_payload.event}: Value: ${JSON.stringify(_payload.returnValues)} `);
         li.appendChild(wsmsg);
         document.getElementById("wsevents").appendChild(li);
+        console.log(_payload);        
       }
 
       function Subscription(subscriptionContractEvent) {
