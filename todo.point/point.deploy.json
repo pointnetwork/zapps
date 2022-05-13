@@ -4,5 +4,6 @@
     "keyvalue": {},
     "contracts": [
       "Todo"
-    ]
+    ],
+    "upgradable": true
   }
