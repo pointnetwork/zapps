@@ -35,8 +35,16 @@ export class SmartcontractService {
       throw new Error('ERROR_POINT_NOT_AVAILABLE');
     }
     else {
-      const result = await this.point.contract.send({contract: 'Change', method: 'createPetition', params: [title, content]});
+      const result = await this.point.contract.call({contract: 'Change', method: 'createPetition', params: [title, content]});
       console.log(result);
+
+      await new Promise(async (res, rej)=> {
+        setTimeout(async () => {
+          this.refresh();
+          return res(true);
+        }, 2000);
+      });
+
       return true;
     }
 
@@ -48,8 +56,17 @@ export class SmartcontractService {
       throw new Error('ERROR_POINT_NOT_AVAILABLE');
     }
     else {
-      const result = await this.point.contract.send({contract: 'Change', method: 'supportPetition', params: [id]});
+      const result = await this.point.contract.call({contract: 'Change', method: 'supportPetition', params: [id]});
       console.log(result);
+
+      await new Promise(async (res, rej)=> {
+        setTimeout(async () => {
+          this.refresh();
+          return res(true);
+        }, 2000);
+      });
+
+
       return true;
     }
 
