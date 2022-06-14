@@ -79,7 +79,7 @@
         formData.append("hellofile", fileupload.files[0]);
         const res = await window.point.storage.postFile(formData);
         // save the image file id in the contract
-        await window.point.contract.send({contract: 'Hello', method: 'setStorageImage', params: [res.data]});
+        await window.point.contract.call({contract: 'Hello', method: 'setStorageImage', params: [res.data]});
 
         // fetch the storage layer image id from the contract (for testing - it should be the same id)
         let {data: storageImageId} = await window.point.contract.call({contract: 'Hello', method: 'storageImage'});
@@ -113,13 +113,13 @@
           let callEcho = await window.point.contract.call({contract: 'Hello', method: 'echo', params: ['ello??']});
           let callSquare= await window.point.contract.call({contract: 'Hello', method: 'square', params: [2]});
           let callAdd = await window.point.contract.call({contract: 'Hello', method: 'add', params: [3,4]});
-          await window.point.contract.send({contract: 'Hello', method: 'incrementCounter', gasLimit: 200000});
+          await window.point.contract.call({contract: 'Hello', method: 'incrementCounter', gasLimit: 200000});
           /* STORAGE API */
 
           // 1. Put the string data onto the storage layer
           let {data: putStringId} = await window.point.storage.putString({data: 'Testing Storage Layer PutString'});
           // 2. Save the string storage id in the Smart Contract
-          await window.point.contract.send({contract: 'Hello', method: 'setStorageValue', params: [putStringId]});
+          await window.point.contract.call({contract: 'Hello', method: 'setStorageValue', params: [putStringId]});
           // 3. Get the storage id back from the Smart Contract (will be the same id, of course)
           let {data: stringIdFromContract} = await window.point.contract.call({contract: 'Hello', method: 'storageValue'});
           // 4. Finally get the original string back from the storage layer using the id returned by the contracts
@@ -228,14 +228,14 @@
       async function emitUpdatedValue() {
         document.getElementById('btnEmitUpdatedValue').innerText = 'Processing';
         let value = document.getElementById('txtUpdatedValue').value;
-        await window.point.contract.send({contract: 'Hello', method: 'setValue', params: [value]});
+        await window.point.contract.call({contract: 'Hello', method: 'setValue', params: [value]});
         document.getElementById('btnEmitUpdatedValue').innerText = 'Emit';
       }
 
       async function emitHelloWorld() {
         document.getElementById('btnEmitHelloWorld').innerText = 'Processing';
         let value = document.getElementById('txtHelloWorld').value;
-        await window.point.contract.send({contract: 'Hello', method: 'emitHelloWorldEvent', params: [value]});
+        await window.point.contract.call({contract: 'Hello', method: 'emitHelloWorldEvent', params: [value]});
         document.getElementById('btnEmitHelloWorld').innerText = 'Emit';
       }
 
@@ -243,7 +243,7 @@
         const input = document.getElementById('valueInput');
         const display = document.getElementById('valueText');
         display.innerHTML = `<p>Storing...</p>`;
-        await window.point.contract.send({contract:'Hello',method:'setValue',params:[input.value]});
+        await window.point.contract.call({contract:'Hello',method:'setValue',params:[input.value]});
         display.innerHTML = `<p>Stored value: ${input.value}</p>`;
         input.value = null;
       }
