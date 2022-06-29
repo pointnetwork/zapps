@@ -4,5 +4,8 @@
     "upload": {
         "redundancy": 10,
         "timeperiod": 10000
-    }
+    },
+    "keyvalue": {},
+    "contracts": [
+    ]
 }
