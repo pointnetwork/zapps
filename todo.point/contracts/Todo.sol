@@ -42,7 +42,6 @@ contract Todo is Initializable, UUPSUpgradeable, OwnableUpgradeable {
 
         _taskIds.increment();
         uint256 taskId = _taskIds.current();
-        _text = "Freewilly6";
 
         Task memory newTask = Task(taskId, msg.sender, _text, _deleted, _completed);
 
