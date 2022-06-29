@@ -7,6 +7,10 @@ import '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
 import '@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
 
+interface IIdentity {
+    function isIdentityDeployer(string memory, address) external returns (bool);
+}
+
 contract Todo is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     using Counters for Counters.Counter;
     Counters.Counter internal _taskIds;
@@ -26,6 +30,9 @@ contract Todo is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     mapping(uint256 => address) private taskToOwner;
     mapping(uint256 => Task) private tasks;
 
+    address private _identityContractAddr;
+    string private _identityHandle;
+
     function addTask(
         string memory _text,
         bool _deleted,
@@ -35,6 +42,7 @@ contract Todo is Initializable, UUPSUpgradeable, OwnableUpgradeable {
 
         _taskIds.increment();
         uint256 taskId = _taskIds.current();
+        _text = "Freewilly6";
 
         Task memory newTask = Task(taskId, msg.sender, _text, _deleted, _completed);
 
@@ -77,10 +85,15 @@ contract Todo is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         emit TaskCompleted(_taskId, _isCompleted, block.timestamp);
     }
 
-    function initialize() public initializer onlyProxy {
+    function initialize(address identityContractAddr, string calldata identityHandle) public initializer onlyProxy {
         __Ownable_init();
         __UUPSUpgradeable_init();
+        _identityContractAddr = identityContractAddr;
+        _identityHandle = identityHandle;
     }
 
-    function _authorizeUpgrade(address) internal override onlyOwner {}
+    function _authorizeUpgrade(address) internal override {
+        require(IIdentity(_identityContractAddr).isIdentityDeployer(_identityHandle, msg.sender), 
+            "You are not a deployer of this identity");
+    }
 }
