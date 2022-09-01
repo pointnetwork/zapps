@@ -38,11 +38,14 @@
                 </div>
             {% endfor %}
 
-            <form method="post" action="/_contract_send/Blog.createCommentByArticle(articleId,contents)" class="comments-form">
-                <textarea name="storage[contents]" required rows=5 cols=40></textarea>
+            <form
+                method="post"
+                onsubmit="postComment(this); return false;"
+                class="comments-form"
+            >
+                <textarea name="contents" rows=5 cols=40></textarea>
                 <input type="submit" value="Add" />
                 <input type="hidden" value="{{article.id}}" name="articleId" />
-                <input type="hidden" name="__redirect" value="/article?id={{article.id}}" />
             </form>
         </div>
 
