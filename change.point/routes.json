@@ -1,3 +1,6 @@
 {
-    "/": "index.html"
+    "/": "index.html",
+    "/home": "index.html",
+    "/home/[a-zA-Z0-9]+": "index.html",
+    "/home/:static.:ext": "rewrite:/:static.:ext"    
 }
