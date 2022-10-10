@@ -1,6 +1,6 @@
 {
     "version": 0.1,
-    "target": "ynet_change.point",
+    "target": "petshop.point",
     "keyvalue": {},
     "contracts": [
       "Adoption"
