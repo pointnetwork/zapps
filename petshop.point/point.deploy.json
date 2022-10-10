@@ -1,6 +1,6 @@
 {
     "version": 0.1,
-    "target": "petshop.point",
+    "target": "ynet_change.point",
     "keyvalue": {},
     "contracts": [
       "Adoption"
@@ -9,7 +9,7 @@
       "name": "truffle",
       "projectDir": ".",
       "addresses": {
-        "Adoption": "0x2532dB3CDa3f0329968fD674A13986C21addca49"
+        "Adoption": "0xe5251bf4475174F48E26dfc84E775a890F2aC160"
       }
     }
   }

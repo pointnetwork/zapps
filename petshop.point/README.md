@@ -48,7 +48,7 @@ Also, copy the ABI of the contracts (in case Adoption.json) from the folder buil
 
 Use the point deploy command to deploy your files to Point Network. Run the following command from the root folder of the application.
 
-`point deploy`
+`point deploy --contracts`
 
 After that, the application should be available in Point Network under the target configured in the point.deploy.json file. You need to have access (be the owner or deployer) to the identity to be able to deploy to it.   
 
@@ -62,7 +62,7 @@ For using this option you must delete the useIDE configuration option in point.d
 
 Deploy the application and contracts using point-deploy command. Run the following command from the root folder of the application.
 
-`point deploy`
+`point deploy --contracts`
 
 In the end of the contract ABI file (build/contracts/Adoption.json), there is a network section, which maps the id of the network to the address of the contract. See the code bellow.
 
