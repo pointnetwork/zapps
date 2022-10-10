@@ -4,5 +4,12 @@
     "keyvalue": {},
     "contracts": [
       "Adoption"
-    ]
+    ],
+    "useIDE": {
+      "name": "truffle",
+      "projectDir": ".",
+      "addresses": {
+        "Adoption": "0x2532dB3CDa3f0329968fD674A13986C21addca49"
+      }
+    }
   }
