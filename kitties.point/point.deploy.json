@@ -10,8 +10,8 @@
       "name": "truffle",
       "projectDir": "./eth",
       "addresses": {
-        "KittyCore": "0x3B16546197cdB14d13bB5DfCdb73299EF03D8401",
-        "MarketPlace": "0x4e9F05bEB0bC92eb20A7E46fa1Bb08d9ad3b088e"
+        "KittyCore": "0x8b75627400Cad1546b9a7B32b5e9d84154a747b3",
+        "MarketPlace": "0x9E8AEFe036ca4A14835517dD44e8b4F01151f150"
       }
     }
   }
