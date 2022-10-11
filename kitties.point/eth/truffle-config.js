@@ -24,11 +24,21 @@
 // const fs = require('fs');
 // const mnemonic = fs.readFileSync(".secret").toString().trim();
 
-
 const HDWalletProvider = require("@truffle/hdwallet-provider");
-
-const fs = require("fs");
-//const mnemonic = fs.readFileSync(".secret").toString().trim();
+const homedir = require('os').homedir();
+const wallet = require('ethereumjs-wallet')
+  .hdkey.fromMasterSeed(
+    require('bip39').mnemonicToSeedSync(
+      require(require('path').resolve(
+        homedir,
+        '.point',
+        'keystore',
+        'key.json'
+      )).phrase
+    )
+  )
+  .getWallet();
+const privateKey = wallet.getPrivateKey().toString('hex');
 
 const INFURA_PUBLIC_KEY = "fad92eec137d4d3085e99d69944fd61c"
 
@@ -76,14 +86,26 @@ module.exports = {
       // timeoutBlocks: 200,  // # of blocks before a deployment times out  (minimum/default: 50)
       // skipDryRun: true     // Skip dry run before migrations? (default: false for public nets )
     // },
-    ropsten: {
-      provider: () => new HDWalletProvider(mnemonic, `https://ropsten.infura.io/v3/${INFURA_PUBLIC_KEY}`),
-      network_id: 3,       // Ropsten's id
-      gas: 5500000,        // Ropsten has a lower block limit than mainnet
-      confirmations: 2,    // # of confs to wait between deployments. (default: 0)
-      timeoutBlocks: 1000,  // # of blocks before a deployment times out  (minimum/default: 50)
-      skipDryRun: true     // Skip dry run before migrations? (default: false for public nets )
-   },
+    //ropsten: {
+    //  provider: () => new HDWalletProvider(mnemonic, `https://ropsten.infura.io/v3/${INFURA_PUBLIC_KEY}`),
+    //  network_id: 3,       // Ropsten's id
+    //  gas: 5500000,        // Ropsten has a lower block limit than mainnet
+    //  confirmations: 2,    // # of confs to wait between deployments. (default: 0)
+    //  timeoutBlocks: 1000,  // # of blocks before a deployment times out  (minimum/default: 50)
+    //  skipDryRun: true     // Skip dry run before migrations? (default: false for public nets )
+    //},
+
+    point: {
+      network_id: "10687", 
+      gasPrice: 7,
+      provider: function() {
+        return new HDWalletProvider({
+            providerOrUrl: "https://rpc-mainnet-1.point.space",
+            privateKeys: [privateKey]
+          }
+        );
+      }
+    }
 
     // Useful for private networks
     // private: {
