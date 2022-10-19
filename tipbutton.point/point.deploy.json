@@ -1,0 +1,8 @@
+{
+    "version": 0.1,
+    "target": "tipbutton.point",
+    "keyvalue": {},
+    "contracts": [],
+    "upgradable": false,
+    "rootDir": "public"
+}
