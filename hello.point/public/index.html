@@ -80,10 +80,8 @@
         const res = await window.point.storage.postFile(formData);
         // save the image file id in the contract
         await window.point.contract.call({contract: 'Hello', method: 'setStorageImage', params: [res.data]});
-
         // fetch the storage layer image id from the contract (for testing - it should be the same id)
         let {data: storageImageId} = await window.point.contract.call({contract: 'Hello', method: 'storageImage'});
-
         // set the src attribute of the image to render the uploaded image (for visual testing)
         document.getElementById('storageImg').setAttribute('src', `/_storage/${storageImageId}`)
       }
@@ -107,7 +105,6 @@
           let ping = await window.point.status.ping();
           let address = await window.point.wallet.address();
           let contract = await window.point.contract.load({contract: 'Hello'});
-          let hash = await window.point.wallet.hash();
           let callValue = await window.point.contract.call({contract: 'Hello', method: 'value'});
           let callCounter = await window.point.contract.call({contract: 'Hello', method: 'counter'});
           let callEcho = await window.point.contract.call({contract: 'Hello', method: 'echo', params: ['ello??']});
@@ -139,7 +136,6 @@
           elements.push(`<p>Ping Test: ${ping.data.ping}</p>`)
           elements.push(`<p>Wallet Address: ${address.data.address}</p>`)
           elements.push(`<p>Hello Smart Contract Address: ${contract.data.address}</p>`)
-          elements.push(`<p>Wallet Hash: ${hash.data.hash}</p>`)
           elements.push(`<p>Contract Call Value: ${callValue.data}</p>`)
           elements.push(`<p>Contract Call Counter: ${callCounter.data}</p>`)
           elements.push(`<p>Contract Call Echo: ${callEcho.data}</p>`)
